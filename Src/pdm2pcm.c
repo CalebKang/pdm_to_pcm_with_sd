@@ -44,7 +44,7 @@ void MX_PDM2PCM_Init(void)
   PDM1_filter_handler.endianness = PDM_FILTER_ENDIANNESS_LE;
   PDM1_filter_handler.high_pass_tap = 2122358088;
   PDM1_filter_handler.in_ptr_channels = 1;
-  PDM1_filter_handler.out_ptr_channels = 2; 
+  PDM1_filter_handler.out_ptr_channels = 1;
   PDM_Filter_Init(&PDM1_filter_handler);
 
   PDM1_filter_config.decimation_factor = PDM_FILTER_DEC_FACTOR_64;
@@ -77,12 +77,6 @@ uint8_t MX_PDM2PCM_Process(uint16_t *PDMBuf, uint16_t *PCMBuf)
     /* PDM to PCM filter */
     PDM_Filter((uint8_t*)&AppPDM[index], (uint16_t*)PCMBuf, &PDM1_filter_handler);
   }
-  /* Duplicate samples since a single microphone in mounted on STM32F4-Discovery */
-  for(index = 0; index < PCM_OUT_SIZE; index++)
-  {
-    PCMBuf[(index<<1)+1] = PCMBuf[index<<1];
-  }
-
   /* Return AUDIO_OK when all operations are correctly done */
   return AUDIO_OK;
 }

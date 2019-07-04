@@ -69,7 +69,7 @@ uint32_t WaveRecStatus = 0;
 uint8_t pHeaderBuff[44];
 uint16_t WrBuffer[WR_BUFFER_SIZE];
 
-static uint16_t RecBuf[PCM_OUT_SIZE*2];/* PCM stereo samples are saved in RecBuf */
+static uint16_t RecBuf[PCM_OUT_SIZE*1];/* PCM stereo samples are saved in RecBuf */
 static uint16_t InternalBuffer[INTERNAL_BUFF_SIZE];
 __IO uint32_t ITCounter = 0;
 Audio_BufferTypeDef  BufferCtl;
@@ -240,17 +240,17 @@ void BSP_AUDIO_IN_TransferComplete_CallBack(void)
   MX_PDM2PCM_Process((uint16_t*)&InternalBuffer[INTERNAL_BUFF_SIZE/2], (uint16_t*)&RecBuf[0]);
   
   /* Copy PCM data in internal buffer */
-  memcpy((uint16_t*)&WrBuffer[ITCounter * (PCM_OUT_SIZE*2)], RecBuf, PCM_OUT_SIZE*4);
+  memcpy((uint16_t*)&WrBuffer[ITCounter * (PCM_OUT_SIZE*1)], RecBuf, PCM_OUT_SIZE*2);
   
   BufferCtl.offset = BUFFER_OFFSET_NONE;
   
-  if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*4))-1)
+  if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*2))-1)
   {
     AUDIODataReady = 1;
     AUDIOBuffOffset = 0;
     ITCounter++;
   }
-  else if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*2))-1)
+  else if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*1))-1)
   {
     AUDIODataReady = 1;
     AUDIOBuffOffset = WR_BUFFER_SIZE/2;
@@ -273,17 +273,17 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(void)
   MX_PDM2PCM_Process((uint16_t*)&InternalBuffer[0], (uint16_t*)&RecBuf[0]);
   
   /* Copy PCM data in internal buffer */
-  memcpy((uint16_t*)&WrBuffer[ITCounter * (PCM_OUT_SIZE*2)], RecBuf, PCM_OUT_SIZE*4);
+  memcpy((uint16_t*)&WrBuffer[ITCounter * (PCM_OUT_SIZE*1)], RecBuf, PCM_OUT_SIZE*2);
   
   BufferCtl.offset = BUFFER_OFFSET_NONE;
   
-  if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*4))-1)
+  if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*2))-1)
   {
     AUDIODataReady = 1;
     AUDIOBuffOffset = 0;
     ITCounter++;
   }
-  else if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*2))-1)
+  else if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*1))-1)
   {
     AUDIODataReady = 1;
     AUDIOBuffOffset = WR_BUFFER_SIZE/2;
@@ -305,7 +305,7 @@ static uint32_t WavProcess_EncInit(uint32_t Freq, uint8_t* pHeader)
 {  
   /* Initialize the encoder structure */
   WaveFormat.SampleRate = Freq;        /* Audio sampling frequency */
-  WaveFormat.NbrChannels = 2;          /* Number of channels: 1:Mono or 2:Stereo */
+  WaveFormat.NbrChannels = 1;          /* Number of channels: 1:Mono or 2:Stereo */
   WaveFormat.BitPerSample = 16;        /* Number of bits per sample (16, 24 or 32) */
   WaveFormat.FileSize = 0x001D4C00;    /* Total length of useful audio data (payload) */
   WaveFormat.SubChunk1Size = 44;       /* The file header chunk size */
